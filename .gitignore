@@ -1,0 +1,12 @@
+# Docker
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Vagrant
+.vagrant/
+
+# OS
+.DS_Store
