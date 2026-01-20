@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  # Docker Registry service (backend)
+  pozos-registry:
+    image: registry:2
+    container_name: pozos-registry
+
+    # Expose registry API on host port 5001
+    ports:
+      - "5001:5000"
+
+    # Enable deletion of images in the registry
+    environment:
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+
+    # Persist registry data (recommended for production)
+    volumes:
+      - registry-data:/var/lib/registry
+
+    # Connect the service to the custom Docker network
+    networks:
+      - pozos-network
+
+  # Web UI for Docker Registry
+  pozos-frontend:
+    image: joxit/docker-registry-ui:2
+    container_name: pozos-frontend
+
+    # Expose the UI on host port 8090
+    ports:
+      - "8090:80"
+
+    # UI configuration
+    environment:
+      # Backend registry URL (resolved via Docker network)
+      NGINX_PROXY_PASS_URL: http://pozos-registry:5000
+
+      # Allow image deletion from the UI
+      DELETE_IMAGES: "true"
+
+      # Title displayed in the web interface
+      REGISTRY_TITLE: pozos-corporation
+
+    # Ensure the registry starts before the UI
+    depends_on:
+      - pozos-registry
+
+    # Connect the service to the same Docker network
+    networks:
+      - pozos-network
+
+# Persistent volume for Docker Registry storage
+volumes:
+  registry-data:
+
+# Custom Docker bridge network
+networks:
+  pozos-network:
+    driver: bridge
