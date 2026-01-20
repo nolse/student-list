@@ -173,11 +173,11 @@ API Test
 
 ![Résultat curl student-list](screenshots/student-list_simple_api_mastercurl-utoto.png)
 
-![docker ps](screenshots/student-list_simple_api_mastercurl-utoto.png)
+![Capture liste student](screenshots/student-list_simple_api_mastercurl-utoto.png)
 
-![docker ps](screenshots/Delete_Container.png)
+![Suppression du conteneur](./student-list/screenshots/Delete_Container.png)
 
-![Docker PS](screenshots/LIST_STUDENTS.png)
+![La liste de students](./screenshots/LIST_STUDENTS.png)
 
 ![Docker PS](screenshots/POZOS-REGISTRY_EMPTY.png)
 
