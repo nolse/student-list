@@ -1,4 +1,5 @@
-<!-- This project demonstrates a complete Docker-based application including:
+-- 
+This project demonstrates a complete Docker-based application including:
 - a Python API
 - a PHP website
 - a private Docker Registry
@@ -80,7 +81,7 @@ docker push localhost:5001/pozos-api:1.0
 Push Results :
 Image visible in registry UI
 API Test
--->
+--
 
 
 ![Résultat curl student-list](screenshots/student-list_simple_api_mastercurl-utoto.png)
