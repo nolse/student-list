@@ -1,4 +1,3 @@
-
 <html>
     <head>
         <title>POZOS</title>
@@ -8,31 +7,41 @@
         <h1>Student Checking App</h1>
         <ul>
             <form action="" method="POST">
-            <!--<label>Enter student name:</label><br />
-            <input type="text" name="" placeholder="Student Name" required/>
-            <br /><br />-->
-            <button type="submit" name="submit">List Student</button>
+                <button type="submit" name="submit">List Students</button>
             </form>
 
             <?php
-              if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['submit']))
-              {
-              $username = getenv('USERNAME');
-              $password = getenv('PASSWORD');
-              if ( empty($username) ) $username = 'fake_username';
-              if ( empty($password) ) $password = 'fake_password';
-              $context = stream_context_create(array(
-                "http" => array(
-                "header" => "Authorization: Basic " . base64_encode("$username:$password"),
-              )));
+            if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
 
-              $url = 'http://<api_ip_or_name:port>/pozos/api/v1.0/get_student_ages';
-              $list = json_decode(file_get_contents($url, false, $context), true);
-              echo "<p style='color:red;; font-size: 20px;'>This is the list of the student with age</p>";
-              foreach($list["student_ages"] as $key => $value) {
-                  echo "- $key is $value years old <br>";
-              }
-             }
+                // Identifiants API
+                $username = getenv('USERNAME') ?: 'fake_username';
+                $password = getenv('PASSWORD') ?: 'fake_password';
+
+                $context = stream_context_create([
+                    "http" => [
+                        "header" => "Authorization: Basic " . base64_encode("$username:$password")
+                    ]
+                ]);
+
+                $url = 'http://api:5000/pozos/api/v1.0/get_student_ages';
+                $json = @file_get_contents($url, false, $context);
+
+                if ($json === false) {
+                    echo "<li>Impossible de récupérer la liste des étudiants depuis l’API.</li>";
+                } else {
+                    $students = json_decode($json, true);
+
+                    if (isset($students['student_ages']) && is_array($students['student_ages']) && count($students['student_ages']) > 0) {
+                        foreach ($students['student_ages'] as $name => $age) {
+                            $name = htmlspecialchars($name);
+                            $age  = htmlspecialchars($age);
+                            echo "<li>$name - Age: $age</li>";
+                        }
+                    } else {
+                        echo "<li>Aucun étudiant trouvé.</li>";
+                    }
+                }
+            }
             ?>
         </ul>
     </body>
