@@ -171,9 +171,9 @@ Image visible in registry UI
 
 API Test
 
-![Docker PS](screenshots/student-list_simple_api_mastercurl-utoto.png)
+![docker ps](screenshots/student-list_simple_api_mastercurl-utoto.png)
 
-![Docker PS](screenshots/Delete_Container.png)
+![docker ps](screenshots/Delete_Container.png)
 
 ![Docker PS](screenshots/LIST_STUDENTS.png)
 
