@@ -77,119 +77,110 @@ Now it is time to explain you each file's role:
 ```bash 
  $url = 'http://<api_ip_or_name:port>/pozos/api/v1.0/get_student_ages';
  ```
-
-
-
-## Build and test (7 points)
-
-POZOS will give you information to build the API container
-
-- Base image
-
-To build API image you must use "python:3.13-slim"
-
-- Maintainer
-
-Please don't forget to specify the maintainer information
-
-- Add the source code
-
-You need to copy the source code of the API in the container at the root "/" path
-
-- Prerequisite
-
-The API is using FLASK engine,  you need to install some package 
-```bash
-apt update -y && apt install python-dev python3-dev libsasl2-dev python-dev libldap2-dev libssl-dev -y
-```
-Copy the requirements.txt file into the container in the root "/" directory to install the packages needed to start up our application
-
-to launch the installation, use this command
-
-```bash
-pip3 install -r /requirements.txt
-```
-- Persistent data (volume)
-
-Create data folder at the root "/" where data will be stored and declare it as a volume
-
-You will use this folder to mount student list
-
-- API Port
-
-To interact with this API expose 5000 port
-
-- CMD
-
-When container start, it must run the student_age.py (copied at step 4), so it should be something like
-```bash 
-CMD [ "python3", "./student_age.py" ]
-```
-
-Build your image and try to run it (don't forget to mount *student_age.json* file at */data/student_age.json* in the container), check logs and verify that the container is listening and is  ready to answer
-
-Run this command to make sure that the API correctly responding (take a screenshot for delivery purpose)
-NB: Start your container using this specific port to reach it
-Port: 5000
-```bash 
-curl -u toto:python -X GET http://<host IP>:<API exposed port>/pozos/api/v1.0/get_student_ages
-```
-
-**Congratulation! Now you are ready for the next step (docker-compose.yml)**
-
-## Infrastructure As Code (5 points)
-
-After testing your API image, you need to put all together and deploy it, using docker-compose.
-
-The ***docker-compose.yml*** file will deploy two services :
-
-- website: the end-user interface with the following characteristics
-   - image: php:apache
-   - environment: you will provide the USERNAME and PASSWORD to enable the web app to access the API through authentication
-   - volumes: to avoid php:apache image run with the default website, we will bind the website given by POZOS to use. You must have something like
-`./website:/var/www/html`
-   - depend on: you need to make sure that the API will start first before the website
-   - port: do not forget to expose the port
-- API: the image builded before should be used with the following specification
-   - image: the name of the image builded previously
-   - volumes: You will mount student_age.json file in /data/student_age.json
-   - port: don't forget to expose the port
-   - networks: don't forget to add specific network for your project
-
-Delete your previous created container
-
-Run your docker-compose.yml
-
-Finally, reach your website and click on the bouton "List Student"
-
-**If the list of the student appears, you are successfully dockerizing the POZOS application! Congratulation (make a screenshot)**
-
-## Docker Registry (4 points)
-
-POZOS need you to deploy a private registry and store the built images
-
-So you need to deploy :
-
-- a docker [registry](https://docs.docker.com/registry/ "registry")
-- a web [interface](https://hub.docker.com/r/joxit/docker-registry-ui/ "interface") to see the pushed image as a container
-
-Or you can use [Portus](http://port.us.org/ "Portus") to run both
-
-Don't forget to push your image on your private registry and show them in your delivery.
-
-## Delivery (4 points)
-
-Your delivery must be link of your repository with your name that contain:
-- A README file with your screenshots and explanations.
-- Configuration files used to realize the graded exercise (docker-compose.yml and Dockerfile).
-
-Your delivery will be evaluated on:
-
-- Explanations quality
-- Screenshots quality (relevance, visibility)
-- Presentation quality
 - The structure of your github repository
 
 Send your delivery at ***contact@eazytraining.fr*** and we will provide you the link of the solution.
+****************** ################# ********************
 
-![good luck](https://user-images.githubusercontent.com/18481009/84582398-cad38100-adeb-11ea-95e3-2a9d4c0d5437.gif)
+# Student List – Docker & Private Registry (Pozos)
+
+This project demonstrates a complete Docker-based application including:
+- a Python API
+- a PHP website
+- a private Docker Registry
+- a web UI to manage and visualize Docker images
+
+The environment runs inside a Vagrant virtual machine.
+
+---
+##  Architecture Overview
+
+- **Vagrant VM**
+  - Ubuntu 22.04
+  - Docker & Docker Compose
+- **Application stack**
+  - Python API (`pozos-api`)
+  - PHP Website
+- **Private Docker Registry**
+  - Docker Registry v2
+  - Registry Web UI (Joxit)
+
+---
+
+##  Project Structure
+
+```text
+student-list/
+├── README.md
+├── docker-compose.yml
+├── docker-compose-registry.yml
+├── simple_api/
+│   ├── student_age.py
+│   ├── student_age.json
+│   ├── requirements.txt
+│   └── Dockerfile
+├── website/
+│   └── index.php
+├── pozos-registry/
+└── screenshots/
+    ├── POZOS-REGISTRY_EMPTY.png
+    ├── Resultat_PUSH_1_POZOS-API.png
+    ├── Resultat_PUSH_2_POZOS-API.png
+    ├── TAG-POZOS-API_REGISTRY.png
+    ├── LIST_STUDENTS.png
+    ├── STUDENT_CHEKING_APP.png
+    ├── student-list_simple_api_mastercurl-utoto.png
+    └── Delete_Container.png
+
+Start the application :
+
+docker compose up -d
+
+Services exposed
+
+| Service     | Port |
+| ----------- | ---- |
+| Python API  | 5000 |
+| PHP Website | 8080 |
+
+The application stack is defined in docker-compose.yml and includes : pozos-api and pozos-website
+
+A shered docker bridge network
+
+Start the private docker registry
+
+docker compose -f docker-compose-registry.yml up -d
+
+Registry services :
+
+| Service         | Port |
+| --------------- | ---- |
+| Docker Registry | 5001 |
+| Registry Web UI | 8090 |
+
+
+Build and Push API image
+
+docker build -t pozos-api ./simple_api
+docker tag pozos-api localhost:5001/pozos-api:1.0
+docker push localhost:5001/pozos-api:1.0
+
+Push Results :
+
+Image visible in registry UI 
+
+API Test
+
+![Docker PS](screenshots/student-list_simple_api_mastercurl-utoto.png)
+
+![Docker PS](screenshots/Delete_Container.png)
+
+![Docker PS](screenshots/LIST_STUDENTS.png)
+
+![Docker PS](screenshots/POZOS-REGISTRY_EMPTY.png)
+
+![Docker PS](screenshots/TAG-POZOS-API_REGISTRY.png)
+
+![Docker PS](screenshots/Resultat_PUSH_1_POZOS-API.png)
+
+![Docker PS](screenshots/Resultat_PUSH_2_POZOS-API.png)
