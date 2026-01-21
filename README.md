@@ -75,11 +75,13 @@ Registry services :
 
 Build and Push API image
 
-docker build -t pozos-api ./simple_api
+docker build -t pozos-api .
 docker tag pozos-api localhost:5001/pozos-api:1.0
 docker push localhost:5001/pozos-api:1.0
 Push Results :
 Image visible in registry UI
 API Test
+
+The reults is in the file screenshots.md
 --
 
